@@ -1,0 +1,18 @@
+{
+  "name": "transmogrify",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/pg": "^6.1.41",
+    "@types/request-promise-native": "^1.0.5",
+    "@types/sequelize": "^3.4.52",
+    "@types/umzug": "^1.8.31",
+    "pg": "^6.3.1",
+    "pg-hstore": "^2.3.2",
+    "request": "^2.81.0",
+    "request-promise-native": "^1.0.4",
+    "sequelize": "^4.1.0",
+    "umzug": "^2.0.1"
+  }
+}

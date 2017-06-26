@@ -1,0 +1,23 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+      "target": "ES6",
+      "module": "commonjs",
+      "noImplicitAny": true,
+      "noEmitOnError": false,
+      "removeComments": true,
+      "preserveConstEnums": true,
+      "strictNullChecks": true,
+      "sourceMap": false,
+      "experimentalDecorators": true,
+      "declaration": true,
+      "noUnusedLocals": true,
+      "strict": false
+    },
+    "include": [
+      "**/*.ts"
+    ],
+    "exclude": [
+      "node_modules/**"
+    ]
+}
