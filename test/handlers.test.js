@@ -21,6 +21,12 @@ describe('Handlers', function () {
                 done();
             });
         });
+        it('sets context.callbackWaitsForEmptyEventLoop', (done) => {
+            handlers_1.up(event, context, (err, result) => {
+                chai_1.expect(context.callbackWaitsForEmptyEventLoop).to.be.false;
+                done();
+            });
+        });
         it('returns 200', (done) => {
             handlers_1.up(event, context, (err, result) => {
                 chai_1.expect(result.statusCode).to.eql(200);
@@ -39,6 +45,12 @@ describe('Handlers', function () {
         it('calls down migration', (done) => {
             handlers_1.up(event, context, (err, result) => {
                 chai_1.expect(stub.calledOnce).to.be;
+                done();
+            });
+        });
+        it('sets context.callbackWaitsForEmptyEventLoop', (done) => {
+            handlers_1.up(event, context, (err, result) => {
+                chai_1.expect(context.callbackWaitsForEmptyEventLoop).to.be.false;
                 done();
             });
         });

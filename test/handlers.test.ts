@@ -2,7 +2,6 @@ import { expect } from 'chai';
 import * as Sequelize from 'sequelize';
 import * as sinon from 'sinon';
 
-
 process.env.DATABASE_URL = 'sqlite://./test'
 
 import { up, down } from '../handlers';
@@ -31,6 +30,13 @@ describe('Handlers', function() {
       });
     });
 
+    it('sets context.callbackWaitsForEmptyEventLoop', (done) => {
+      up(event, context, (err: Error, result: any) => {
+        expect(context.callbackWaitsForEmptyEventLoop).to.be.false
+        done();
+      });
+    });
+
     it('returns 200', (done) => {
       up(event, context, (err: Error, result: any) => {
         expect(result.statusCode).to.eql(200)
@@ -52,6 +58,13 @@ describe('Handlers', function() {
     it('calls down migration', (done) => {
       up(event, context, (err: Error, result: any) => {
         expect(stub.calledOnce).to.be
+        done();
+      });
+    });
+
+    it('sets context.callbackWaitsForEmptyEventLoop', (done) => {
+      up(event, context, (err: Error, result: any) => {
+        expect(context.callbackWaitsForEmptyEventLoop).to.be.false
         done();
       });
     });
