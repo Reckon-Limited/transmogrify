@@ -20,7 +20,7 @@ For details on using migrations please see the [Sequelize Migration](http://docs
 Installation
 
 ```
-yarn add transmogrify
+yarn add serverless-transmogrify
 ```
 
 ## Configuration
