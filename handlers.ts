@@ -23,12 +23,20 @@ const umzug = new Umzug({
     }
 });
 
-export let handler: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
+export let up: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
+  return handler(umzug.up, callback);
+};
 
-  let migrations = await umzug.up();
+export let down: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+  return handler(umzug.down, callback);
+};
 
-  console.log(`Migrations ${migrations}`)
+let handler = async (fn: () => {}, callback: l.Callback) => {
+  let migrations = await fn();
+
+  console.log(`Transmogrify Migrations: ${migrations}`)
 
   const response = {
     statusCode: 200,

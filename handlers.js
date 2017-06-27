@@ -28,10 +28,17 @@ const umzug = new Umzug({
         console.log.apply(null, arguments);
     }
 });
-exports.handler = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
+exports.up = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
-    let migrations = yield umzug.up();
-    console.log(`Migrations ${migrations}`);
+    return handler(umzug.up, callback);
+});
+exports.down = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
+    context.callbackWaitsForEmptyEventLoop = false;
+    return handler(umzug.down, callback);
+});
+let handler = (fn, callback) => __awaiter(this, void 0, void 0, function* () {
+    let migrations = yield fn();
+    console.log(`Transmogrify Migrations: ${migrations}`);
     const response = {
         statusCode: 200,
         body: JSON.stringify('ok')
