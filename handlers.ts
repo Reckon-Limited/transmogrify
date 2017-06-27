@@ -1,39 +1,18 @@
 import * as l from 'aws-lambda';
-import * as pg from 'pg';
-import * as Sequelize from 'sequelize';
-import * as Umzug from 'umzug';
-
-const _ = pg; //typescript will ignore unused imports
-
-const sequelize = new Sequelize(process.env.DATABASE_URL);
-
-const umzug = new Umzug({
-    storage: 'sequelize',
-    storageOptions: {
-      sequelize: sequelize,
-    },
-    migrations: {
-      params: [
-        sequelize.getQueryInterface(), // queryInterface
-        sequelize.constructor, // DataTypes
-      ]
-    },
-    logging: function() {
-      console.log.apply(null, arguments);
-    }
-});
+import { Migration } from './migration'
 
 export let up: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  return handler(umzug.up, callback);
+  console.log('up')
+  return handler(Migration.up, callback);
 };
 
 export let down: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  return handler(umzug.down, callback);
+  return handler(Migration.down, callback);
 };
 
-let handler = async (fn: () => {}, callback: l.Callback) => {
+let handler = async (fn: () => {}, callback: l.Callback) => {  
   let migrations = await fn();
 
   console.log(`Transmogrify Migrations: ${migrations}`)
