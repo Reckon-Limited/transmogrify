@@ -8,10 +8,22 @@ class Transmogrify {
   hooks: {[hook: string]: () => void}
 
   constructor(serverless: any, options: any) {
+    this.provider = 'aws';
+
     this.serverless = serverless
 
-    // set the providers name here
-    this.provider = 'aws';
+    this.serverless.service.getAllFunctions().forEach( (name: string) => {
+      let fn: {handler: string} = this.serverless.service.functions[name];
+      this.serverless.cli.log(`Transmogrify the Handler for Function ${name}` );
+
+      if (fn.handler == 'transmogrify.up') {
+        fn.handler = 'node_modules/transmogrify/handlers.up';
+      }
+
+      if (fn.handler == 'transmogrify.down') {
+        fn.handler = 'node_modules/transmogrify/handlers.down';
+      }
+    });
 
     this.hooks = {
       'after:deploy:deploy': this.afterDeployFunctions
@@ -27,10 +39,9 @@ class Transmogrify {
 	}
 
   afterDeployFunctions = async () => {
-    console.log('afterDeployFunctions');
-
-    this.serverless.cli.log('afterDeployFunctions');
-    this.serverless.cli.log(JSON.stringify(this.serverless.service.provider.apiKeys));
+    // console.log('afterDeployFunctions');
+    // this.serverless.cli.log('afterDeployFunctions');
+    // this.serverless.cli.log(JSON.stringify(this.serverless.service.provider.apiKeys));
 
     let url = this.config.up;
     let token = this.config.token;
@@ -62,7 +73,5 @@ class Transmogrify {
 
   }
 }
-
-
 
 export = Transmogrify;

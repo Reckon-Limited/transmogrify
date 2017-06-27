@@ -11,9 +11,6 @@ const request = require("request-promise-native");
 class Transmogrify {
     constructor(serverless, options) {
         this.afterDeployFunctions = () => __awaiter(this, void 0, void 0, function* () {
-            console.log('afterDeployFunctions');
-            this.serverless.cli.log('afterDeployFunctions');
-            this.serverless.cli.log(JSON.stringify(this.serverless.service.provider.apiKeys));
             let url = this.config.up;
             let token = this.config.token;
             if (!url) {
@@ -36,8 +33,18 @@ class Transmogrify {
                 this.serverless.cli.log(`ERROR calling migration endpoint ${err}`);
             }
         });
-        this.serverless = serverless;
         this.provider = 'aws';
+        this.serverless = serverless;
+        this.serverless.service.getAllFunctions().forEach((name) => {
+            let fn = this.serverless.service.functions[name];
+            this.serverless.cli.log(`Transmogrify the Handler for Function ${name}`);
+            if (fn.handler == 'transmogrify.up') {
+                fn.handler = 'node_modules/transmogrify/handlers.up';
+            }
+            if (fn.handler == 'transmogrify.down') {
+                fn.handler = 'node_modules/transmogrify/handlers.down';
+            }
+        });
         this.hooks = {
             'after:deploy:deploy': this.afterDeployFunctions
         };
