@@ -7,34 +7,21 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-const request = require("request-promise-native");
 class Transmogrify {
     constructor(serverless, options) {
         this.afterDeployFunctions = () => __awaiter(this, void 0, void 0, function* () {
-            let url = this.config.up;
-            let token = this.config.token;
-            if (!url) {
-                this.serverless.cli.log(`WARNING no endpoint configured for migration`);
-                return;
+            if (this.options.function) {
+                this.serverless.cli.log(`Calling migration function: ${this.options.function}`);
+                this.serverless.pluginManager.invoke(['invoke']);
             }
-            this.serverless.cli.log(`Calling migration endpoint: ${url}`);
-            try {
-                let opts = {
-                    url: url,
-                    headers: { 'x-api-key': token }
-                };
-                let result = yield request(opts);
-                if (result.statusCode != 200 && result.body == 'OK') {
-                    throw new Error(result.statusCode);
-                }
-                this.serverless.cli.log(`Migration OK`);
-            }
-            catch (err) {
-                this.serverless.cli.log(`ERROR calling migration endpoint ${err}`);
+            else {
+                this.serverless.cli.log('No migration function defined');
+                this.serverless.cli.log('Specify a function name using the --function option / -f shortcut.');
             }
         });
-        this.provider = 'aws';
         this.serverless = serverless;
+        this.options = options;
+        this.provider = 'aws';
         this.serverless.service.getAllFunctions().forEach((name) => {
             let fn = this.serverless.service.functions[name];
             this.serverless.cli.log(`Transmogrify the Handler for Function ${name}`);
@@ -48,14 +35,6 @@ class Transmogrify {
         this.hooks = {
             'after:deploy:deploy': this.afterDeployFunctions
         };
-    }
-    get config() {
-        if (this.serverless.service.custom && this.serverless.service.custom.transmogrify) {
-            return this.serverless.service.custom.transmogrify;
-        }
-        else {
-            return {};
-        }
     }
 }
 module.exports = Transmogrify;

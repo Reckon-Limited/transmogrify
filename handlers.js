@@ -20,9 +20,5 @@ exports.down = (event, context, callback) => __awaiter(this, void 0, void 0, fun
 let handler = (fn, callback) => __awaiter(this, void 0, void 0, function* () {
     let migrations = yield fn();
     console.log(`Transmogrify Migrations: ${migrations}`);
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify('ok')
-    };
-    return callback(undefined, response);
+    return callback(undefined, 'OK');
 });

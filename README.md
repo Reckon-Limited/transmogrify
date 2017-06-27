@@ -23,33 +23,30 @@ Installation
 yarn add serverless-transmogrify
 ```
 
+## Usage
+
+Define a migration handler function.
+
+Pass the function as an option to the standard serverless deploy command
+
+```
+sls deploy --stage dev --function up
+```
+
+The function will be invoked after the deployment.  
+
+
 ## Configuration
 
 
-### Add Transmogrify config
-
-If you know your service endpoint, you can bootstrap the config to your serverless file immediately by manually adding the stage and handler name to the endpoint.
-
-```
-transmogrify:
-  up: https://7vksnlgb2k.execute-api.ap-southeast-2.amazonaws.com/dev/up
-  token: egsrv6bvmtonm9wj91uswnqwtr1qwntwqbzsxftc  
-```
-
-In the above example:
-
-- `dev` is the stage.
-- `up` is the path to the handler defined in your API Gateway event config
-- `token` is an api gateway token required to access the handler
-
-The token is optional but highly recommended. See below for details.
-
 ### Define the Transmogrify handler
 
-Handlers:
+The plugin provides two built-in Migration Handlers:
 
 - transmogrify.up
 - transmogrify.down
+
+These get mapped to the correct handler code at deploy time.
 
 Required ENV variables:
 
@@ -65,8 +62,6 @@ The function handler is mounted into the same VPC and private subnet as the targ
 ```
 provider:
   name: aws
-  apiKeys:
-    - transmogrify
 
 plugins:
   - transmogrify
@@ -83,22 +78,4 @@ up:
       - Fn::ImportValue: VPC-PrivateDataSubnet1
       - Fn::ImportValue: VPC-PrivateDataSubnet2
       - Fn::ImportValue: VPC-PrivateDataSubnet3
-  events:
-    - http:
-        method: get
-        path: /up
-        private: true
 ```
-
-
-### First Deployment
-
-If this is your first deploy of your serverless project, you will need to do the initial deployment in two steps.
-
-  1. Define the handler as above
-  2. Deploy
-  3. Capture the API Key and Endpoint information
-  4. Add the transmogrify config as above
-  5. Deploy
-
-Transmogrify will not attempt to call the migration webhook unless configuration is defined, so the initial deploy will set up the Resources in your stack, and the second deployment will call the migration handler.

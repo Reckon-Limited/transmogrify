@@ -16,9 +16,9 @@ let handler = async (fn: () => {}, callback: l.Callback) => {
 
   console.log(`Transmogrify Migrations: ${migrations}`)
 
-  const response = {
-    statusCode: 200,
-    body: JSON.stringify('ok')
-  };
-  return callback(undefined, response);
+  // const response = {
+  //   statusCode: 200,
+  //   body: JSON.stringify('ok')
+  // };
+  return callback(undefined, 'OK');
 };

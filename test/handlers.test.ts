@@ -46,7 +46,7 @@ describe('Handlers', function() {
 
     it('returns OK', (done) => {
       up(event, context, (err: Error, result: any) => {
-        expect(result.body).to.include('ok')
+        expect(result.body).to.eql('ok')
         done();
       });
     });
@@ -78,7 +78,7 @@ describe('Handlers', function() {
 
     it('returns OK', (done) => {
       up(event, context, (err: Error, result: any) => {
-        expect(result.body).to.include('ok')
+        expect(result.body).to.eql('ok')
         done();
       });
     });

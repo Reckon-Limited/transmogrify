@@ -35,7 +35,7 @@ describe('Handlers', function () {
         });
         it('returns OK', (done) => {
             handlers_1.up(event, context, (err, result) => {
-                chai_1.expect(result.body).to.include('ok');
+                chai_1.expect(result.body).to.eql('ok');
                 done();
             });
         });
@@ -62,7 +62,7 @@ describe('Handlers', function () {
         });
         it('returns OK', (done) => {
             handlers_1.up(event, context, (err, result) => {
-                chai_1.expect(result.body).to.include('ok');
+                chai_1.expect(result.body).to.eql('ok');
                 done();
             });
         });
