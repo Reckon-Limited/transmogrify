@@ -1,6 +1,6 @@
 # Transmogrify
 
-Database migrations for AWS Lambda and RDS using Sequelize migrations.
+Database migrations for AWS Lambda and RDS using [Sequelize Migrations](http://docs.sequelizejs.com/manual/tutorial/migrations.html).
 
 ## About
 
@@ -8,8 +8,23 @@ Allows you to easily create a lambda function inside your RDS VPC that will hand
 
 The plugin will call the migration endpoint on deploy for you to run the migrations.
 
+## Migrations
+
+The plugin assumes that migration files live in a `migrations` directory inside your project.
+
+For details on using migrations please see the [Sequelize Migration](http://docs.sequelizejs.com/manual/tutorial/migrations.html) docs.
+
 
 ## Deployment
+
+Installation
+
+```
+yarn add transmogrify
+```
+
+## Configuration
+
 
 ### Add Transmogrify config
 
@@ -24,7 +39,7 @@ transmogrify:
 In the above example:
 
 - `dev` is the stage.
-- `up` is the handler name
+- `up` is the path to the handler defined in your API Gateway event config
 - `token` is an api gateway token required to access the handler
 
 The token is optional but highly recommended. See below for details.
@@ -40,8 +55,22 @@ Required ENV variables:
 
 - DATABASE_URL
 
+It is strongly recommended that you make the migration endpoints private and add an api token to your configuration
+
+### Sample Handler Configuration
+
+The following defines a function handler called `up` mounted at the path `/up`.
+The function handler is mounted into the same VPC and private subnet as the target RDS instance.
 
 ```
+provider:
+  name: aws
+  apiKeys:
+    - transmogrify
+
+plugins:
+  - transmogrify
+
 up:
   handler: transmogrify.up
   timeout: 30
@@ -60,3 +89,16 @@ up:
         path: /up
         private: true
 ```
+
+
+### First Deployment
+
+If this is your first deploy of your serverless project, you will need to do the initial deployment in two steps.
+
+  1. Define the handler as above
+  2. Deploy
+  3. Capture the API Key and Endpoint information
+  4. Add the transmogrify config as above
+  5. Deploy
+
+Transmogrify will not attempt to call the migration webhook unless configuration is defined, so the initial deploy will set up the Resources in your stack, and the second deployment will call the migration handler.
