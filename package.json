@@ -8,13 +8,14 @@
     "request": "^2.81.0",
     "request-promise-native": "^1.0.4",
     "sequelize": "^4.1.0",
+    "testdouble": "^3.2.1",
     "umzug": "^2.0.1"
   },
   "devDependencies": {
     "@types/aws-lambda": "^0.0.14",
     "@types/chai": "^4.0.1",
-    "@types/pg": "^6.1.41",
     "@types/mocha": "^2.2.41",
+    "@types/pg": "^6.1.41",
     "@types/request-promise-native": "^1.0.5",
     "@types/sequelize": "^3.4.52",
     "@types/sinon": "^2.3.2",

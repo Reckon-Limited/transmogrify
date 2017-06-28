@@ -20,5 +20,5 @@ let handler = async (fn: () => {}, callback: l.Callback) => {
   //   statusCode: 200,
   //   body: JSON.stringify('ok')
   // };
-  return callback(undefined, 'OK');
+  return callback(undefined, 'ok');
 };
