@@ -9,6 +9,12 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 class Transmogrify {
     constructor(serverless, options) {
+        this.handlers = {
+            'transmogrify.up': 'node_modules/transmogrify/handlers.up',
+            'transmogrify.down': 'node_modules/transmogrify/handlers.down',
+            'transmogrify.create': 'node_modules/transmogrify/handlers.create',
+            'transmogrify.drop': 'node_modules/transmogrify/handlers.drop'
+        };
         this.afterDeployFunctions = () => __awaiter(this, void 0, void 0, function* () {
             if (this.options.function) {
                 this.serverless.cli.log(`Calling migration function: ${this.options.function}`);
@@ -25,11 +31,8 @@ class Transmogrify {
         this.serverless.service.getAllFunctions().forEach((name) => {
             let fn = this.serverless.service.functions[name];
             this.serverless.cli.log(`Transmogrify the Handler for Function ${name}`);
-            if (fn.handler == 'transmogrify.up') {
-                fn.handler = 'node_modules/transmogrify/handlers.up';
-            }
-            if (fn.handler == 'transmogrify.down') {
-                fn.handler = 'node_modules/transmogrify/handlers.down';
+            if (this.handlers[fn.handler]) {
+                fn.handler = this.handlers[fn.handler];
             }
         });
         this.hooks = {

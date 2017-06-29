@@ -17,8 +17,25 @@ exports.down = (event, context, callback) => __awaiter(this, void 0, void 0, fun
     context.callbackWaitsForEmptyEventLoop = false;
     return handler(migration_1.Migration.down, callback);
 });
+exports.create = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
+    context.callbackWaitsForEmptyEventLoop = false;
+    if (!event.name) {
+        return callback(new Error('Name is required'), undefined);
+    }
+    let password = yield migration_1.Migration.create(event.name);
+    return callback(undefined, `Created Database and User ${event.name} with password '${password}'`);
+});
+exports.drop = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
+    context.callbackWaitsForEmptyEventLoop = false;
+    if (!event.name) {
+        return callback(new Error('Name is required'), undefined);
+    }
+    migration_1.Migration.drop(event.name);
+    return callback(undefined, `Dropped Database and User ${event.name}`);
+});
 let handler = (fn, callback) => __awaiter(this, void 0, void 0, function* () {
-    let migrations = yield fn();
+    let results = yield fn();
+    let migrations = results.map((m) => m.file);
     console.log(`Transmogrify Migrations: ${migrations}`);
-    return callback(undefined, 'ok');
+    return callback(undefined, `ok: ${migrations}`);
 });

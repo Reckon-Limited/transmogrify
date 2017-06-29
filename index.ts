@@ -1,4 +1,4 @@
-import * as request from 'request-promise-native';
+// import * as request from 'request-promise-native';
 
 class Transmogrify {
   serverless: any
@@ -6,6 +6,14 @@ class Transmogrify {
 
   provider: string
   hooks: {[hook: string]: () => void}
+
+
+  handlers: {[handler:string]: string} = {
+    'transmogrify.up': 'node_modules/transmogrify/handlers.up',
+    'transmogrify.down': 'node_modules/transmogrify/handlers.down',
+    'transmogrify.create': 'node_modules/transmogrify/handlers.create',
+    'transmogrify.drop': 'node_modules/transmogrify/handlers.drop'
+  }
 
   constructor(serverless: any, options: any) {
     this.serverless = serverless
@@ -16,32 +24,15 @@ class Transmogrify {
       let fn: {handler: string} = this.serverless.service.functions[name];
       this.serverless.cli.log(`Transmogrify the Handler for Function ${name}` );
 
-      if (fn.handler == 'transmogrify.up') {
-        fn.handler = 'node_modules/transmogrify/handlers.up';
-      }
-
-      if (fn.handler == 'transmogrify.down') {
-        fn.handler = 'node_modules/transmogrify/handlers.down';
+      if (this.handlers[fn.handler]) {
+        fn.handler = this.handlers[fn.handler];
       }
     });
-
-    // this.hooks = {
-    //   'info:info': () => this.serverless.pluginManager.spawn('aws:info'),
-    //
-    //   'deploy:deploy':
 
     this.hooks = {
       'after:deploy:deploy': this.afterDeployFunctions
     };
   }
-
-  // get config() {
-  //   if (this.serverless.service.custom && this.serverless.service.custom.transmogrify) {
-  //     return this.serverless.service.custom.transmogrify;
-  //   } else {
-  //     return {};
-  //   }
-	// }
 
   afterDeployFunctions = async () => {
     if (this.options.function) {
@@ -78,6 +69,15 @@ class Transmogrify {
     //   this.serverless.cli.log(`ERROR calling migration endpoint ${err}`);
     // }
   }
+
+  // get config() {
+  //   if (this.serverless.service.custom && this.serverless.service.custom.transmogrify) {
+  //     return this.serverless.service.custom.transmogrify;
+  //   } else {
+  //     return {};
+  //   }
+	// }
+
 }
 
 export = Transmogrify;

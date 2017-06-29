@@ -5,6 +5,9 @@ declare class Transmogrify {
     hooks: {
         [hook: string]: () => void;
     };
+    handlers: {
+        [handler: string]: string;
+    };
     constructor(serverless: any, options: any);
     afterDeployFunctions: () => Promise<void>;
 }
