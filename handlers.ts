@@ -5,12 +5,14 @@ import { Migration } from './migration'
 
 export let up: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  return handler(Migration.up, callback);
+  let migration = new Migration(process.env.DATABASE_URL)
+  return handler(migration.up, callback);
 };
 
 export let down: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  return handler(Migration.down, callback);
+  let migration = new Migration(process.env.DATABASE_URL)
+  return handler(migration.down, callback);
 };
 
 export let create: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
@@ -20,9 +22,13 @@ export let create: l.Handler = async (event: any, context: l.Context, callback: 
     return callback(new Error('Name is required'), undefined);
   }
 
-  let password = await Migration.create(event.name)
-
-  return callback(undefined, `Created Database and User ${event.name} with password '${password}'`);
+  try {
+    let migration = new Migration(process.env.DATABASE_URL)
+    let password = await migration.create(event.name)
+    return callback(undefined, `Created Database and User ${event.name} with password '${password}'`);
+  } catch(err) {
+    return callback(err, undefined);
+  }
 };
 
 
@@ -33,18 +39,20 @@ export let drop: l.Handler = async (event: any, context: l.Context, callback: l.
     return callback(new Error('Name is required'), undefined);
   }
 
-  Migration.drop(event.name)
-
-  return callback(undefined, `Dropped Database and User ${event.name}`);
+  try {
+    let migration = new Migration(process.env.DATABASE_URL)
+    migration.drop(event.name)
+    return callback(undefined, `Dropped Database and User ${event.name}`);
+  } catch(err) {
+    return callback(err, undefined);
+  }
 };
 
 
 let handler = async (fn: () => {}, callback: l.Callback) => {
-  let results: any = await fn();
+  let results = await fn();
 
-  let migrations = results.map( (m: {file: string}) => m.file);
+  console.log(`Transmogrify Migrations: ${results}`)
 
-  console.log(`Transmogrify Migrations: ${migrations}`)
-
-  return callback(undefined, `ok: ${migrations}`);
+  return callback(undefined, `ok: ${results}`);
 };

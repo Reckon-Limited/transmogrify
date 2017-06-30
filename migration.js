@@ -12,54 +12,84 @@ const pg = require("pg");
 const Sequelize = require("sequelize");
 const Umzug = require("umzug");
 const _ = pg;
-process.env.DATABASE_URL = 'postgres://toby.hede:@localhost:5432/postgres';
-const sequelize = new Sequelize(process.env.DATABASE_URL);
-const umzug = new Umzug({
-    storage: 'sequelize',
-    storageOptions: {
-        sequelize: sequelize,
-    },
-    migrations: {
-        params: [
-            sequelize.getQueryInterface(),
-            sequelize.constructor,
-        ]
-    },
-    logging: function () {
-        console.log.apply(null, arguments);
-    }
-});
 class Migration {
-    static up() {
-        return umzug.up();
+    constructor(url) {
+        this.url = url;
+        this.init();
     }
-    static down() {
-        return umzug.down();
+    init() {
+        let opts = {
+            pool: {
+                max: 1,
+                min: 0,
+                idle: 5000
+            }
+        };
+        this._sequelize = new Sequelize(this.url, opts);
+        this._umzug = new Umzug({
+            storage: 'sequelize',
+            storageOptions: {
+                sequelize: this.sequelize
+            },
+            migrations: {
+                params: [
+                    this._sequelize.getQueryInterface(),
+                    this._sequelize.constructor
+                ]
+            },
+            logging: function () {
+                console.log.apply(null, arguments);
+            }
+        });
     }
-    static drop(name) {
+    get sequelize() {
+        return this._sequelize;
+    }
+    get umzug() {
+        return this._umzug;
+    }
+    up() {
+        let results = this.umzug.up();
+        return results.map((m) => m.file);
+    }
+    down() {
+        let results = this.umzug.down();
+        return results.map((m) => m.file);
+    }
+    drop(name) {
         return __awaiter(this, void 0, void 0, function* () {
             let revokeUser = `REVOKE ALL PRIVILEGES ON DATABASE ${name} FROM ${name};`;
             let dropDb = `DROP DATABASE IF EXISTS ${name}`;
             let dropUser = `DROP ROLE IF EXISTS ${name};`;
-            yield sequelize.query(revokeUser);
-            yield sequelize.query(dropUser);
-            yield sequelize.query(dropDb);
+            console.log(`Dropping Database and User: ${name}`);
+            try {
+                yield this.sequelize.query(revokeUser);
+                yield this.sequelize.query(dropUser);
+                yield this.sequelize.query(dropDb);
+            }
+            catch (err) {
+                console.log(`Error Dropping Database and User: ${name}`);
+                console.log(err);
+                throw err;
+            }
         });
     }
-    static create(name) {
+    create(name) {
         return __awaiter(this, void 0, void 0, function* () {
             let password = Math.random().toString(36).substring(2, 20);
             let createDb = `CREATE DATABASE ${name}`;
             let createUser = `CREATE ROLE ${name} WITH LOGIN PASSWORD '${password}' NOINHERIT`;
             let grantUser = `GRANT ALL PRIVILEGES ON DATABASE ${name} TO ${name};`;
+            console.log(`Creating Database and User: ${name}`);
             try {
-                yield sequelize.query(createDb);
-                yield sequelize.query(createUser);
-                yield sequelize.query(grantUser);
+                yield this.sequelize.query(createDb);
+                yield this.sequelize.query(createUser);
+                yield this.sequelize.query(grantUser);
             }
             catch (err) {
-                console.log('Rolling back create');
-                Migration.drop(name);
+                console.log(`Error Creating Database and User: ${name}`);
+                console.log('Rollback');
+                this.drop(name);
                 throw err;
             }
             return password;

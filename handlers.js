@@ -11,31 +11,44 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const migration_1 = require("./migration");
 exports.up = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
-    return handler(migration_1.Migration.up, callback);
+    let migration = new migration_1.Migration(process.env.DATABASE_URL);
+    return handler(migration.up, callback);
 });
 exports.down = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
-    return handler(migration_1.Migration.down, callback);
+    let migration = new migration_1.Migration(process.env.DATABASE_URL);
+    return handler(migration.down, callback);
 });
 exports.create = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
     if (!event.name) {
         return callback(new Error('Name is required'), undefined);
     }
-    let password = yield migration_1.Migration.create(event.name);
-    return callback(undefined, `Created Database and User ${event.name} with password '${password}'`);
+    try {
+        let migration = new migration_1.Migration(process.env.DATABASE_URL);
+        let password = yield migration.create(event.name);
+        return callback(undefined, `Created Database and User ${event.name} with password '${password}'`);
+    }
+    catch (err) {
+        return callback(err, undefined);
+    }
 });
 exports.drop = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
     if (!event.name) {
         return callback(new Error('Name is required'), undefined);
     }
-    migration_1.Migration.drop(event.name);
-    return callback(undefined, `Dropped Database and User ${event.name}`);
+    try {
+        let migration = new migration_1.Migration(process.env.DATABASE_URL);
+        migration.drop(event.name);
+        return callback(undefined, `Dropped Database and User ${event.name}`);
+    }
+    catch (err) {
+        return callback(err, undefined);
+    }
 });
 let handler = (fn, callback) => __awaiter(this, void 0, void 0, function* () {
     let results = yield fn();
-    let migrations = results.map((m) => m.file);
-    console.log(`Transmogrify Migrations: ${migrations}`);
-    return callback(undefined, `ok: ${migrations}`);
+    console.log(`Transmogrify Migrations: ${results}`);
+    return callback(undefined, `ok: ${results}`);
 });
