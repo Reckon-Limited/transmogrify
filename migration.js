@@ -58,11 +58,15 @@ class Migration {
     }
     drop(name) {
         return __awaiter(this, void 0, void 0, function* () {
+            let disableConnections = `UPDATE pg_database SET datallowconn = false WHERE datname = '${name}'`;
+            let terminateBackend = `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${name}'`;
             let revokeUser = `REVOKE ALL PRIVILEGES ON DATABASE ${name} FROM ${name};`;
-            let dropDb = `DROP DATABASE IF EXISTS ${name}`;
-            let dropUser = `DROP ROLE IF EXISTS ${name};`;
+            let dropUser = `DROP ROLE ${name};`;
+            let dropDb = `DROP DATABASE ${name}`;
             console.log(`Dropping Database and User: ${name}`);
             try {
+                yield this.sequelize.query(disableConnections);
+                yield this.sequelize.query(terminateBackend);
                 yield this.sequelize.query(revokeUser);
                 yield this.sequelize.query(dropUser);
                 yield this.sequelize.query(dropDb);

@@ -62,13 +62,17 @@ export class Migration {
 
   async drop(name: string) {
 
+    let disableConnections = `UPDATE pg_database SET datallowconn = false WHERE datname = '${name}'`;
+    let terminateBackend = `SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${name}'`;
     let revokeUser = `REVOKE ALL PRIVILEGES ON DATABASE ${name} FROM ${name};`;
-    let dropDb = `DROP DATABASE IF EXISTS ${name}`;
-    let dropUser = `DROP ROLE IF EXISTS ${name};`;
+    let dropUser = `DROP ROLE ${name};`;
+    let dropDb = `DROP DATABASE ${name}`;
 
     console.log(`Dropping Database and User: ${name}`);
 
     try {
+      await this.sequelize.query(disableConnections);
+      await this.sequelize.query(terminateBackend);
       await this.sequelize.query(revokeUser);
       await this.sequelize.query(dropUser);
       await this.sequelize.query(dropDb);
