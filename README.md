@@ -87,7 +87,7 @@ up:
 Now at no extra charge!!
 Databases can be created and dropped using Transmogrify as well via the `transmogrify.create` and `transmogrify.drop` handlers.
 
-Best option is to invoke locally. 
+Best option is to invoke locally.
 
 ```
 sls invoke --function create --path params.js --stage dev
@@ -99,4 +99,26 @@ The params.js file defines the database name
 {
   "name": "test"
 }
+```
+
+
+
+## Sanity Checking Your Database Connection
+
+Connects via Sequelize and runs a noop check.
+
+```
+  check:
+    handler: transmogrify.check
+    timeout: 30
+    environment:
+      DATABASE_URL: ${self:custom.vars.database-url-${opt:stage}}
+    vpc: ${self:custom.vpc}
+
+```
+
+Again, can be invoked locally:
+
+```
+sls invoke --function check  --stage dev
 ```
