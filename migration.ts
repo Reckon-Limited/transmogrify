@@ -101,6 +101,8 @@ export class Migration {
       console.log(`Error Creating Database and User: ${name}`);
       console.log('Rollback');
       this.drop(name);
+      // console.log('Rollback');
+      // this.drop(name);
       throw err;
     }
 
