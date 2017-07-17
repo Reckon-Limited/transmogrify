@@ -115,11 +115,7 @@ export class Migration {
       await this.sequelize.query(createUser);
       await this.sequelize.query(grantUser);
     } catch(err) {
-      console.log(`Error Creating Database and User: ${name}`);
-      console.log('Rollback');
-      this.drop(name);
-      // console.log('Rollback');
-      // this.drop(name);
+      console.log(`Error Creating Database and User: ${name}`);      
       throw err;
     }
 
