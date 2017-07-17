@@ -79,3 +79,24 @@ up:
       - Fn::ImportValue: VPC-PrivateDataSubnet2
       - Fn::ImportValue: VPC-PrivateDataSubnet3
 ```
+
+
+
+## Creating and Dropping Databases
+
+Now at no extra charge!!
+Databases can be created and dropped using Transmogrify as well via the `transmogrify.create` and `transmogrify.drop` handlers.
+
+Best option is to invoke locally. 
+
+```
+sls invoke --function create --path params.js --stage dev
+```
+
+
+The params.js file defines the database name
+```
+{
+  "name": "test"
+}
+```
