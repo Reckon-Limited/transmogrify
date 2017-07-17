@@ -47,6 +47,17 @@ exports.drop = (event, context, callback) => __awaiter(this, void 0, void 0, fun
         return callback(err, undefined);
     }
 });
+exports.check = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
+    context.callbackWaitsForEmptyEventLoop = false;
+    try {
+        let migration = new migration_1.Migration(process.env.DATABASE_URL);
+        yield migration.check();
+        return callback(undefined, 'Connection ok');
+    }
+    catch (err) {
+        return callback(err, undefined);
+    }
+});
 let handler = (fn, callback) => __awaiter(this, void 0, void 0, function* () {
     let results = yield fn();
     console.log(`Transmogrify Migrations: ${results}`);

@@ -12,6 +12,7 @@ export declare class Migration {
     readonly umzug: Umzug.Umzug;
     up(): any;
     down(): any;
+    check(): Promise<void>;
     drop(name: string): Promise<void>;
     create(name: string): Promise<string>;
 }

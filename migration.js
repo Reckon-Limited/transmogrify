@@ -56,6 +56,20 @@ class Migration {
         let results = this.umzug.down();
         return results.map((m) => m.file);
     }
+    check() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let disableConnections = 'SELECT 1 = 1;';
+            console.log('Checking connection to Database');
+            try {
+                yield this.sequelize.query(disableConnections);
+            }
+            catch (err) {
+                console.log('Error checking connection to Database');
+                console.log(err);
+                throw err;
+            }
+        });
+    }
     drop(name) {
         return __awaiter(this, void 0, void 0, function* () {
             let disableConnections = `UPDATE pg_database SET datallowconn = false WHERE datname = '${name}'`;

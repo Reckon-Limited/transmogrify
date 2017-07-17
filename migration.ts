@@ -60,6 +60,23 @@ export class Migration {
     return results.map( (m: {file: string}) => m.file);
   }
 
+  async check() {
+
+    let disableConnections = 'SELECT 1 = 1;';
+
+    console.log('Checking connection to Database');
+
+    try {
+      await this.sequelize.query(disableConnections);
+
+    } catch(err) {
+      console.log('Error checking connection to Database');
+      console.log(err);
+      throw err;
+    }
+  }
+
+
   async drop(name: string) {
 
     let disableConnections = `UPDATE pg_database SET datallowconn = false WHERE datname = '${name}'`;

@@ -13,7 +13,8 @@ class Transmogrify {
             'transmogrify.up': 'node_modules/transmogrify/handlers.up',
             'transmogrify.down': 'node_modules/transmogrify/handlers.down',
             'transmogrify.create': 'node_modules/transmogrify/handlers.create',
-            'transmogrify.drop': 'node_modules/transmogrify/handlers.drop'
+            'transmogrify.drop': 'node_modules/transmogrify/handlers.drop',
+            'transmogrify.check': 'node_modules/transmogrify/handlers.check'
         };
         this.afterDeployFunctions = () => __awaiter(this, void 0, void 0, function* () {
             if (this.options.function) {

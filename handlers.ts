@@ -48,6 +48,17 @@ export let drop: l.Handler = async (event: any, context: l.Context, callback: l.
   }
 };
 
+export let check: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
+  context.callbackWaitsForEmptyEventLoop = false;
+
+  try {
+    let migration = new Migration(process.env.DATABASE_URL)
+    await migration.check();
+    return callback(undefined, 'Connection ok');
+  } catch(err) {
+    return callback(err, undefined);
+  }
+};
 
 let handler = async (fn: () => {}, callback: l.Callback) => {
   let results = await fn();
