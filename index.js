@@ -10,11 +10,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 class Transmogrify {
     constructor(serverless, options) {
         this.handlers = {
-            'transmogrify.up': 'node_modules/transmogrify/handlers.up',
-            'transmogrify.down': 'node_modules/transmogrify/handlers.down',
-            'transmogrify.create': 'node_modules/transmogrify/handlers.create',
-            'transmogrify.drop': 'node_modules/transmogrify/handlers.drop',
-            'transmogrify.check': 'node_modules/transmogrify/handlers.check'
+            'transmogrify.up': 'node_modules/serverless-transmogrify/handlers.up',
+            'transmogrify.down': 'node_modules/serverless-transmogrify/handlers.down',
+            'transmogrify.create': 'node_modules/serverless-transmogrify/handlers.create',
+            'transmogrify.drop': 'node_modules/serverless-transmogrify/handlers.drop',
+            'transmogrify.check': 'node_modules/serverless-transmogrify/handlers.check'
         };
         this.afterDeployFunctions = () => __awaiter(this, void 0, void 0, function* () {
             if (this.options.function) {
