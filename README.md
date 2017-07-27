@@ -64,7 +64,7 @@ provider:
   name: aws
 
 plugins:
-  - transmogrify
+  - serverless-transmogrify
 
 up:
   handler: transmogrify.up
