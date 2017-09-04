@@ -5,14 +5,21 @@ import { Migration } from './migration'
 
 export let up: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  let migration = new Migration(process.env.DATABASE_URL)
-  return handler(migration.up, callback);
+  const migration = new Migration(process.env.DATABASE_URL)
+  const results = await migration.up();
+
+  console.log(`Transmogrify Migrations: ${results}`)
+  return callback(undefined, `ok: ${results}`);
 };
 
 export let down: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
   context.callbackWaitsForEmptyEventLoop = false;
-  let migration = new Migration(process.env.DATABASE_URL)
-  return handler(migration.down, callback);
+  const migration = new Migration(process.env.DATABASE_URL)
+
+  const results = await migration.down();
+
+  console.log(`Transmogrify Migrations: ${results}`)
+  return callback(undefined, `ok: ${results}`);
 };
 
 export let create: l.Handler = async (event: any, context: l.Context, callback: l.Callback) => {
@@ -58,12 +65,4 @@ export let check: l.Handler = async (event: any, context: l.Context, callback: l
   } catch(err) {
     return callback(err, undefined);
   }
-};
-
-let handler = async (fn: () => {}, callback: l.Callback) => {
-  let results = await fn();
-
-  console.log(`Transmogrify Migrations: ${results}`)
-
-  return callback(undefined, `ok: ${results}`);
 };

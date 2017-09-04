@@ -11,13 +11,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const migration_1 = require("./migration");
 exports.up = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
-    let migration = new migration_1.Migration(process.env.DATABASE_URL);
-    return handler(migration.up, callback);
+    const migration = new migration_1.Migration(process.env.DATABASE_URL);
+    const results = yield migration.up();
+    console.log(`Transmogrify Migrations: ${results}`);
+    return callback(undefined, `ok: ${results}`);
 });
 exports.down = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
-    let migration = new migration_1.Migration(process.env.DATABASE_URL);
-    return handler(migration.down, callback);
+    const migration = new migration_1.Migration(process.env.DATABASE_URL);
+    const results = yield migration.down();
+    console.log(`Transmogrify Migrations: ${results}`);
+    return callback(undefined, `ok: ${results}`);
 });
 exports.create = (event, context, callback) => __awaiter(this, void 0, void 0, function* () {
     context.callbackWaitsForEmptyEventLoop = false;
@@ -57,9 +61,4 @@ exports.check = (event, context, callback) => __awaiter(this, void 0, void 0, fu
     catch (err) {
         return callback(err, undefined);
     }
-});
-let handler = (fn, callback) => __awaiter(this, void 0, void 0, function* () {
-    let results = yield fn();
-    console.log(`Transmogrify Migrations: ${results}`);
-    return callback(undefined, `ok: ${results}`);
 });
